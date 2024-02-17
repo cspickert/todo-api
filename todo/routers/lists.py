@@ -1,10 +1,9 @@
 from fastapi import Depends, status
-from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRouter
 
 from todo import models
-from todo.schemas import ListResponse, TodoList, TodoListWritable
-from todo.security import get_user
+from todo.queries import fetch_list, fetch_user
+from todo.schemas import ListResponse, TodoList, TodoListCreate, TodoListUpdate
 
 router = APIRouter(prefix="/lists", tags=["lists"])
 
@@ -17,10 +16,11 @@ router = APIRouter(prefix="/lists", tags=["lists"])
     response_model=TodoList,
 )
 def create_list(
-    list: TodoListWritable,
-    user: models.User = Depends(get_user),
+    list: TodoListCreate,
+    user: models.User = Depends(fetch_user),
 ):
-    todo_list = user.lists.create(name=list.name)
+    list_attrs = list.model_dump()
+    todo_list = user.lists.create(**list_attrs)
     return TodoList.model_validate(todo_list)
 
 
@@ -28,9 +28,11 @@ def create_list(
     "",
     response_model=ListResponse[TodoList],
 )
-def get_lists(user: models.User = Depends(get_user)):
-    todo_lists = [TodoList.model_validate(obj) for obj in user.lists.all()]
-    return ListResponse(results=todo_lists)
+def get_lists(
+    user: models.User = Depends(fetch_user),
+):
+    results = [TodoList.model_validate(obj) for obj in user.lists.all()]
+    return ListResponse(results=results)
 
 
 @router.get(
@@ -38,17 +40,9 @@ def get_lists(user: models.User = Depends(get_user)):
     response_model=TodoList,
 )
 def get_list(
-    list_id: int,
-    user: models.User = Depends(get_user),
+    todo_list: models.TodoList = Depends(fetch_list),
 ):
-    try:
-        todo_list = user.lists.get(id=list_id)
-        return TodoList.model_validate(todo_list)
-    except models.TodoList.DoesNotExist:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="List not found.",
-        )
+    return TodoList.model_validate(todo_list)
 
 
 @router.patch(
@@ -56,21 +50,13 @@ def get_list(
     response_model=TodoList,
 )
 def update_list(
-    list_id: int,
-    list_attrs: TodoListWritable,
-    user: models.User = Depends(get_user),
+    list_attrs: TodoListUpdate,
+    todo_list: models.TodoList = Depends(fetch_list),
 ):
-    try:
-        todo_list = user.lists.get(id=list_id)
-        for attr, value in list_attrs.model_dump(exclude_unset=True).items():
-            setattr(todo_list, attr, value)
-        todo_list.save()
-        return TodoList.model_validate(todo_list)
-    except models.TodoList.DoesNotExist:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="List not found.",
-        )
+    for attr, value in list_attrs.model_dump(exclude_unset=True).items():
+        setattr(todo_list, attr, value)
+    todo_list.save()
+    return TodoList.model_validate(todo_list)
 
 
 @router.delete(
@@ -78,14 +64,6 @@ def update_list(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_list(
-    list_id: int,
-    user: models.User = Depends(get_user),
+    todo_list: models.TodoList = Depends(fetch_list),
 ):
-    try:
-        todo_list = user.lists.get(id=list_id)
-        todo_list.delete()
-    except models.TodoList.DoesNotExist:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="List not found.",
-        )
+    todo_list.delete()

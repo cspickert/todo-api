@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from .lists import router as lists_router
-from .lists import router as tasks_router
+from .tasks import router as tasks_router
 
 
 def register_routers(app: FastAPI):
