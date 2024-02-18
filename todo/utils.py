@@ -1,7 +1,10 @@
-import uuid
+from django.utils.crypto import get_random_string
 
 
 def generate_key() -> str:
-    """Returns a randomly generated 32-character string."""
+    """Returns a securely generated random 32-character string."""
 
-    return uuid.uuid4().hex
+    return get_random_string(length=32)
+
+
+__all__ = ["generate_key"]

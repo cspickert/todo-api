@@ -53,8 +53,16 @@ def auth(key):
 
 
 @pytest.fixture
-def todo_list(user):
-    return user.lists.create(name="test list")
+def make_todo_list():
+    def fn(user, **kwargs):
+        return user.lists.create(**kwargs)
+
+    return fn
+
+
+@pytest.fixture
+def todo_list(user, make_todo_list):
+    return make_todo_list(user=user, name="test list")
 
 
 @pytest.fixture

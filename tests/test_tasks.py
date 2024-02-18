@@ -3,6 +3,26 @@ import pytest
 from todo.models import TodoTask
 
 
+@pytest.fixture
+def todo_list_1(user):
+    return user.lists.create(name="list 1")
+
+
+@pytest.fixture
+def task_1(todo_list_1):
+    return todo_list_1.tasks.create(task="task 1")
+
+
+@pytest.fixture
+def todo_list_2(user):
+    return user.lists.create(name="list 2")
+
+
+@pytest.fixture
+def task_2(todo_list_2):
+    return todo_list_2.tasks.create(task="task 2")
+
+
 def test_create_task(client, todo_list):
     resp = client.post(
         "/tasks",
@@ -29,6 +49,24 @@ def test_get_tasks(client, task):
             }
         ]
     }
+
+
+def test_get_tasks_filter_by_list(client, todo_list_1, todo_list_2, task_1, task_2):
+    resp = client.get("/tasks")
+    assert resp.status_code == 200
+    assert [task["id"] for task in resp.json()["results"]] == [task_1.id, task_2.id]
+
+    resp = client.get(f"/tasks?list_id={todo_list_1.id}")
+    assert resp.status_code == 200
+    assert [task["id"] for task in resp.json()["results"]] == [task_1.id]
+
+    resp = client.get(f"/tasks?list_id={todo_list_2.id}")
+    assert resp.status_code == 200
+    assert [task["id"] for task in resp.json()["results"]] == [task_2.id]
+
+    resp = client.get("/tasks?list_id=8675309")
+    assert resp.status_code == 200
+    assert [task["id"] for task in resp.json()["results"]] == []
 
 
 def test_get_tasks_anon(anon_client):
