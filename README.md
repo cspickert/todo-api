@@ -1,13 +1,17 @@
 # To-do API
 
-This is a simple REST API for managing to-do lists, built with `fastapi` and
-the `django` ORM (with data stored in SQLite).
+This is a simple REST API for managing to-do lists and tasks, built with
+`fastapi` and the `django` ORM (with data stored in SQLite).
 
 ## API overview
 
-The API consists of two resources, lists and tasks. All requests must be
-authenticated using API keys passed via the HTTP `Authorization` header
-with the value formatted as `Bearer <api_key>`.
+The API consists of two resources, lists and tasks.
+
+Requests must be authenticated using API keys passed via the HTTP
+`Authorization` header with the value formatted as `Bearer <api_key>`. Requests
+made with a given API key can only be used to interact data created by the API
+key's associated user (keys for different users cannot be used to access one
+anothers' data).
 
 ### Lists
 
