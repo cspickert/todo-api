@@ -1,6 +1,6 @@
 import pytest
 
-from todo.models import TodoList
+from todo.models import TodoList, TodoTask
 
 
 def test_create_list(client):
@@ -66,11 +66,14 @@ def test_update_list_user_mismatch(other_client, todo_list):
     assert resp.status_code == 404
 
 
-def test_delete_list(client, todo_list):
+def test_delete_list(client, todo_list, task):
+    assert todo_list.tasks.get() == task
     resp = client.delete(f"/lists/{todo_list.id}")
     assert resp.status_code == 204
     with pytest.raises(TodoList.DoesNotExist):
         todo_list.refresh_from_db()
+    with pytest.raises(TodoTask.DoesNotExist):
+        task.refresh_from_db()
 
 
 def test_delete_list_nonexistent(client):

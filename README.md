@@ -15,7 +15,7 @@ Here's an example of how this API can be used to create and manage to-dos:
 * `GET /tasks?list_id=1` - get tasks on the list
 * `PATCH /tasks/1 {"task": "Design & build API"}` - update a task
 * `DELETE /tasks/2` - remove a task
-* `DELETE /lists/1` - remove a list (and all associated tasks)
+* `DELETE /lists/1` - remove a list and its tasks
 
 ## API overview
 
