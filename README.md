@@ -1,6 +1,6 @@
 # To-do API
 
-## Overview
+## Introduction
 
 This is a simple REST API for managing to-do lists and tasks, built with
 `fastapi` and the `django` ORM (with data stored in SQLite).
