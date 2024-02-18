@@ -1,11 +1,13 @@
-# Todo API
+# To-do API
 
-This is a simple to-do list REST API built with `fastapi` and `django`.
+This is a simple REST API for managing to-do lists, built with `fastapi` and
+the `django` ORM (with data stored in SQLite).
 
 ## API overview
 
-The API consists of two resources: lists and tasks. See below for an overview of
-each.
+The API consists of two resources, lists and tasks. All requests must be
+authenticated using API keys passed via the HTTP `Authorization` header
+with the value formatted as `Bearer <api_key>`.
 
 ### Lists
 
@@ -16,6 +18,13 @@ Each list has the following attributes:
 * `id` - A unique ID for the list
 * `name` - A user-provided name for the list (e.g. "Reminders")
 
+Supported operations:
+* `POST /lists` - create a list
+* `GET /lists` - get all lists created by the requesting user
+* `GET /lists/{id}` - get the list with the provided `id`
+* `PATCH /lists/{id}` - update one or more attributes of the list with the provided `id`
+* `DELETE /lists/{id}` - delete the list with the provided `id`
+
 ### Tasks
 
 Endpoint `/tasks[/{id}]`
@@ -25,6 +34,14 @@ attributes:
 * `id` - A unique ID for the task
 * `list_id` - The ID of the list the task belongs to
 * `task` - Arbitrary user-provided task string (e.g. "take out the trash")
+
+Supported operations:
+* `POST /tasks` - create a task
+* `GET /tasks` - get all tasks created by the requesting user
+* `GET /tasks?list_id={list_id}` - get all tasks on the to-do list with the provided list `id`
+* `GET /tasks/{id}` - get the task with the provided `id`
+* `PATCH /tasks/{id}` - update one or more attributes of the task with the provided `id`
+* `DELETE /tasks/{id}` - delete the task with the provided `id`
 
 ## Running the API
 
