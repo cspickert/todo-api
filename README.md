@@ -63,9 +63,13 @@ Supported operations:
 
 ## Running the API
 
+Note: this project was developed using Python 3.12. These instructions may or
+may not work on earlier versions of Python.
+
 To run the API locally (http://localhost:8000), run the following:
 
 ```sh
+$ pip install -U pipenv
 $ pipenv shell
 $ pipenv install
 $ python manage.py setup_db
