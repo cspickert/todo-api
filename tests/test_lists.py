@@ -10,6 +10,15 @@ def test_create_list(client):
     assert resp.json() == {"id": todo_list.id, "name": "new test list"}
 
 
+def test_create_list_missing_field(client):
+    resp = client.post("/lists", json={})
+    assert resp.status_code == 422
+    errors = resp.json()["detail"]
+    assert len(errors) == 1
+    assert errors[0]["type"] == "missing"
+    assert errors[0]["loc"] == ["body", "name"]
+
+
 def test_get_lists(client, todo_list):
     resp = client.get("/lists")
     assert resp.status_code == 200

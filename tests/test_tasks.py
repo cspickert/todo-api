@@ -37,6 +37,15 @@ def test_create_task(client, todo_list):
     }
 
 
+def test_create_task_missing_fields(client):
+    resp = client.post("/tasks", json={})
+    assert resp.status_code == 422
+    errors = resp.json()["detail"]
+    assert len(errors) == 2
+    assert set(error["type"] for error in errors) == {"missing"}
+    assert set(error["loc"][1] for error in errors) == {"task", "list_id"}
+
+
 def test_get_tasks(client, task):
     resp = client.get("/tasks")
     assert resp.status_code == 200
