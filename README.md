@@ -1,7 +1,21 @@
 # To-do API
 
+## Overview
+
 This is a simple REST API for managing to-do lists and tasks, built with
 `fastapi` and the `django` ORM (with data stored in SQLite).
+
+### Example
+
+Here's an example of how this API can be used to create and manage to-dos:
+
+* `POST /lists {"name": "Work"}` - create a "Work" to-do list
+* `POST /tasks {"list_id": 1, "task": "Design API"}` - add a task to the list
+* `POST /tasks {"list_id": 1, "task": "Write documentation"}` - add another task to the list
+* `GET /tasks?list_id=1` - get tasks on the list
+* `PATCH /tasks/1 {"task": "Design & build API"}` - update a task
+* `DELETE /tasks/2` - remove a task
+* `DELETE /lists/1` - remove a list (and all associated tasks)
 
 ## API overview
 
@@ -27,7 +41,7 @@ Supported operations:
 * `GET /lists` - get all lists created by the requesting user
 * `GET /lists/{id}` - get the list with the provided `id`
 * `PATCH /lists/{id}` - update one or more attributes of the list with the provided `id`
-* `DELETE /lists/{id}` - delete the list with the provided `id`
+* `DELETE /lists/{id}` - delete the list with the provided `id` *and all associated tasks*
 
 ### Tasks
 
