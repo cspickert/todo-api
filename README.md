@@ -19,7 +19,7 @@ Endpoint: `/lists[/{id}]`
 
 This resource represents a to-do list, i.e. a collection of tasks (see below).
 Each list has the following attributes:
-* `id` - A unique ID for the list
+* `id` - The auto-generated unique ID for the list
 * `name` - A user-provided name for the list (e.g. "Reminders")
 
 Supported operations:
@@ -35,7 +35,7 @@ Endpoint `/tasks[/{id}]`
 
 This resource represents a task on a to-do list. It has the following
 attributes:
-* `id` - A unique ID for the task
+* `id` - The auto-generated unique ID for the task
 * `list_id` - The ID of the list the task belongs to
 * `task` - Arbitrary user-provided task string (e.g. "take out the trash")
 
