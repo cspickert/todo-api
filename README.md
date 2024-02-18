@@ -1,8 +1,32 @@
 # Todo API
 
-This is a simple to-do list API built with `fastapi` and `django`.
+This is a simple to-do list REST API built with `fastapi` and `django`.
 
-## How to run the API
+## API overview
+
+The API consists of two resources: lists and tasks. See below for an overview of
+each.
+
+### Lists
+
+Endpoint: `/lists[/{id}]`
+
+This resource represents a to-do list, i.e. a collection of tasks (see below).
+Each list has the following attributes:
+* `id` - A unique ID for the list
+* `name` - A user-provided name for the list (e.g. "Reminders")
+
+### Tasks
+
+Endpoint `/tasks[/{id}]`
+
+This resource represents a task on a to-do list. It has the following
+attributes:
+* `id` - A unique ID for the task
+* `list_id` - The ID of the list the task belongs to
+* `task` - Arbitrary user-provided task string (e.g. "take out the trash")
+
+## Running the API
 
 To run the API locally (http://localhost:8000), run the following:
 
