@@ -1,6 +1,6 @@
 from fastapi import Depends, Security, status
 from fastapi.exceptions import HTTPException
-from fastapi.security import HTTPBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from todo import models
 
@@ -8,7 +8,7 @@ security = HTTPBearer()
 
 
 def fetch_user(
-    auth: str = Security(security),
+    auth: HTTPAuthorizationCredentials = Security(security),
 ) -> models.User:
     """Fetches the user associated with the provided API key.
 

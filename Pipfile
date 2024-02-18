@@ -10,6 +10,9 @@ uvicorn = "*"
 
 [dev-packages]
 ruff = "*"
+pytest = "*"
+httpx = "*"
+pytest-django = "*"
 
 [requires]
 python_version = "3.12"

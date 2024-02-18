@@ -14,6 +14,7 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 @router.post(
     "",
     response_model=TodoTask,
+    status_code=status.HTTP_201_CREATED,
 )
 def create_task(
     task: TodoTaskCreate,

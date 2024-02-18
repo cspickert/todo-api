@@ -16,7 +16,7 @@ class TodoListUpdate(Base):
     name: str
 
 
-class TodoListCreate(Base):
+class TodoListCreate(TodoListUpdate):
     pass
 
 

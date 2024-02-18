@@ -14,12 +14,13 @@ router = APIRouter(prefix="/lists", tags=["lists"])
 @router.post(
     "",
     response_model=TodoList,
+    status_code=status.HTTP_201_CREATED,
 )
 def create_list(
-    list: TodoListCreate,
+    todo_list: TodoListCreate,
     user: models.User = Depends(fetch_user),
 ):
-    list_attrs = list.model_dump()
+    list_attrs = todo_list.model_dump()
     todo_list = user.lists.create(**list_attrs)
     return TodoList.model_validate(todo_list)
 
