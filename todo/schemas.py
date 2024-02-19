@@ -1,3 +1,4 @@
+from datetime import datetime
 
 from pydantic import BaseModel as _BaseModel
 from pydantic import ConfigDict, Field
@@ -35,6 +36,7 @@ class TodoTask(Base):
     todo_list_id: int = Field(alias="list_id")
     task: str
     completed: bool
+    due_at: datetime | None
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
@@ -44,6 +46,7 @@ class TodoTaskUpdate(Base):
 
     task: str = ""
     completed: bool = False
+    due_at: datetime | None = None
 
 
 class TodoTaskCreate(Base):

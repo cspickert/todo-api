@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 from django.utils import timezone
 
@@ -36,6 +38,7 @@ def test_create_task(client, todo_list):
         "list_id": task.todo_list_id,
         "task": "new test task",
         "completed": False,
+        "due_at": None,
     }
 
 
@@ -58,6 +61,7 @@ def test_get_tasks(client, task):
                 "list_id": task.todo_list_id,
                 "task": task.task,
                 "completed": False,
+                "due_at": None,
             }
         ]
     }
@@ -95,6 +99,7 @@ def test_get_task(client, task):
         "list_id": task.todo_list_id,
         "task": task.task,
         "completed": False,
+        "due_at": None,
     }
 
 
@@ -117,6 +122,7 @@ def test_update_task(client, task):
         "list_id": task.todo_list_id,
         "task": updated_task,
         "completed": False,
+        "due_at": None,
     }
     task.refresh_from_db()
     assert task.task == updated_task
@@ -131,6 +137,7 @@ def test_update_task_completed(client, task):
         "list_id": task.todo_list_id,
         "task": task.task,
         "completed": True,
+        "due_at": None,
     }
     task.refresh_from_db()
     assert task.completed
@@ -148,10 +155,47 @@ def test_update_task_not_completed(client, task):
         "list_id": task.todo_list_id,
         "task": task.task,
         "completed": False,
+        "due_at": None,
     }
     task.refresh_from_db()
     assert not task.completed
     assert task.completed_at is None
+
+
+@pytest.mark.freeze_time
+def test_update_task_due_at(client, task):
+    due_at = timezone.now() + timedelta(days=1)
+    resp = client.patch(
+        f"/tasks/{task.id}",
+        json={"due_at": due_at.isoformat()},
+    )
+    assert resp.status_code == 200
+    assert resp.json() == {
+        "id": task.id,
+        "list_id": task.todo_list_id,
+        "task": task.task,
+        "completed": False,
+        "due_at": due_at.isoformat().replace("+00:00", "Z"),
+    }
+    task.refresh_from_db()
+    assert task.due_at == due_at
+
+
+@pytest.mark.freeze_time
+def test_update_task_due_at_none(client, task):
+    task.due_at = timezone.now() + timedelta(days=1)
+    task.save()
+    resp = client.patch(f"/tasks/{task.id}", json={"due_at": None})
+    assert resp.status_code == 200
+    assert resp.json() == {
+        "id": task.id,
+        "list_id": task.todo_list_id,
+        "task": task.task,
+        "completed": False,
+        "due_at": None,
+    }
+    task.refresh_from_db()
+    assert task.due_at is None
 
 
 def test_update_task_nonexistent(client):
