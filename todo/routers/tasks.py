@@ -67,7 +67,6 @@ async def update_task(
     )
     for attr, value in updated_attrs.model_dump(
         exclude_unset=True,
-        exclude={"completed"},
     ).items():
         if getattr(task, attr) != value:
             setattr(task, attr, value)

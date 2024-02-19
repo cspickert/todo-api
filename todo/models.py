@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from todo.utils import generate_key
 
@@ -63,3 +64,7 @@ class TodoTask(Base):
     @property
     def completed(self):
         return self.completed_at is not None
+
+    @completed.setter
+    def completed(self, completed):
+        self.completed_at = timezone.now() if completed else None

@@ -46,16 +46,6 @@ class TodoTaskUpdate(Base):
 
     task: str = ""
     completed: bool = False
-    completed_at: datetime | None = Field(default=None, validate_default=True)
-
-    @model_validator(mode="after")
-    def validate_completed_at(self):
-        if (
-            "completed" in self.model_fields_set
-            and "completed_at" not in self.model_fields_set
-        ):
-            self.completed_at = timezone.now() if self.completed else None
-        return self
 
 
 class TodoTaskCreate(Base):
