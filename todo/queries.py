@@ -7,7 +7,7 @@ from todo import models
 security = HTTPBearer()
 
 
-def fetch_user(
+async def fetch_user(
     auth: HTTPAuthorizationCredentials = Security(security),
 ) -> models.User:
     """Fetches the user associated with the provided API key.
@@ -15,7 +15,7 @@ def fetch_user(
     Raises an HTTP exception if the API key is invalid."""
 
     try:
-        return models.User.objects.get(keys__key=auth.credentials)
+        return await models.User.objects.aget(keys__key=auth.credentials)
     except models.User.DoesNotExist:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -23,7 +23,7 @@ def fetch_user(
         )
 
 
-def fetch_list(
+async def fetch_list(
     list_id: int,
     user: models.User = Depends(fetch_user),
 ) -> models.TodoList:
@@ -33,7 +33,7 @@ def fetch_list(
     user."""
 
     try:
-        return user.lists.get(id=list_id)
+        return await user.lists.aget(id=list_id)
     except models.TodoList.DoesNotExist:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -41,7 +41,7 @@ def fetch_list(
         )
 
 
-def fetch_task(
+async def fetch_task(
     task_id: int,
     user: models.User = Depends(fetch_user),
 ) -> models.TodoTask:
@@ -51,7 +51,9 @@ def fetch_task(
     user."""
 
     try:
-        return models.TodoTask.objects.filter(todo_list__user=user).get(id=task_id)
+        return await models.TodoTask.objects.filter(todo_list__user=user).aget(
+            id=task_id
+        )
     except models.TodoTask.DoesNotExist:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -17,14 +17,14 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
     status_code=status.HTTP_201_CREATED,
     description="Create a task.",
 )
-def create_task(
+async def create_task(
     task: TodoTaskCreate,
     user: models.User = Depends(fetch_user),
 ):
     task_attrs = task.model_dump()
     task_attrs["todo_list_id"] = task_attrs.pop("list_id")
-    todo_list = fetch_list(list_id=task.list_id, user=user)
-    task = todo_list.tasks.create(**task_attrs)
+    todo_list = await fetch_list(list_id=task.list_id, user=user)
+    task = await todo_list.tasks.acreate(**task_attrs)
     return TodoTask.model_validate(task)
 
 
@@ -33,11 +33,13 @@ def create_task(
     response_model=ListResponse[TodoTask],
     description="Retrieve tasks.",
 )
-def get_tasks(user: models.User = Depends(fetch_user), list_id: int | None = None):
+async def get_tasks(
+    user: models.User = Depends(fetch_user), list_id: int | None = None
+):
     tasks_queryset = models.TodoTask.objects.filter(todo_list__user=user)
     if list_id is not None:
         tasks_queryset = tasks_queryset.filter(todo_list_id=list_id)
-    results = [TodoTask.model_validate(obj) for obj in tasks_queryset]
+    results = [TodoTask.model_validate(obj) async for obj in tasks_queryset]
     return ListResponse(results=results)
 
 
@@ -46,7 +48,7 @@ def get_tasks(user: models.User = Depends(fetch_user), list_id: int | None = Non
     response_model=TodoTask,
     description="Retrieve a task.",
 )
-def get_task(task: models.TodoTask = Depends(fetch_task)):
+async def get_task(task: models.TodoTask = Depends(fetch_task)):
     return TodoTask.model_validate(task)
 
 
@@ -55,13 +57,13 @@ def get_task(task: models.TodoTask = Depends(fetch_task)):
     response_model=TodoTask,
     description="Update a task.",
 )
-def update_task(
+async def update_task(
     task_attrs: TodoTaskUpdate,
     task: models.TodoTask = Depends(fetch_task),
 ):
     for attr, value in task_attrs.model_dump(exclude_unset=True).items():
         setattr(task, attr, value)
-    task.save()
+    await task.asave()
     return TodoTask.model_validate(task)
 
 
@@ -70,7 +72,7 @@ def update_task(
     status_code=status.HTTP_204_NO_CONTENT,
     description="Delete a task.",
 )
-def delete_task(
+async def delete_task(
     task: models.TodoTask = Depends(fetch_task),
 ):
-    task.delete()
+    await task.adelete()

@@ -17,12 +17,12 @@ router = APIRouter(prefix="/lists", tags=["lists"])
     status_code=status.HTTP_201_CREATED,
     description="Create a list.",
 )
-def create_list(
+async def create_list(
     todo_list: TodoListCreate,
     user: models.User = Depends(fetch_user),
 ):
     list_attrs = todo_list.model_dump()
-    todo_list = user.lists.create(**list_attrs)
+    todo_list = await user.lists.acreate(**list_attrs)
     return TodoList.model_validate(todo_list)
 
 
@@ -31,10 +31,10 @@ def create_list(
     response_model=ListResponse[TodoList],
     description="Retrieve lists.",
 )
-def get_lists(
+async def get_lists(
     user: models.User = Depends(fetch_user),
 ):
-    results = [TodoList.model_validate(obj) for obj in user.lists.all()]
+    results = [TodoList.model_validate(obj) async for obj in user.lists.all()]
     return ListResponse(results=results)
 
 
@@ -43,7 +43,7 @@ def get_lists(
     response_model=TodoList,
     description="Retrieve a list.",
 )
-def get_list(
+async def get_list(
     todo_list: models.TodoList = Depends(fetch_list),
 ):
     return TodoList.model_validate(todo_list)
@@ -54,13 +54,13 @@ def get_list(
     response_model=TodoList,
     description="Update a list.",
 )
-def update_list(
+async def update_list(
     list_attrs: TodoListUpdate,
     todo_list: models.TodoList = Depends(fetch_list),
 ):
     for attr, value in list_attrs.model_dump(exclude_unset=True).items():
         setattr(todo_list, attr, value)
-    todo_list.save()
+    await todo_list.asave()
     return TodoList.model_validate(todo_list)
 
 
@@ -69,7 +69,7 @@ def update_list(
     status_code=status.HTTP_204_NO_CONTENT,
     description="Delete a list.",
 )
-def delete_list(
+async def delete_list(
     todo_list: models.TodoList = Depends(fetch_list),
 ):
-    todo_list.delete()
+    await todo_list.adelete()
