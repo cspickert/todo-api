@@ -1,8 +1,6 @@
-from datetime import datetime
 
-from django.utils import timezone
 from pydantic import BaseModel as _BaseModel
-from pydantic import ConfigDict, Field, model_validator
+from pydantic import ConfigDict, Field
 
 
 class Base(_BaseModel):
