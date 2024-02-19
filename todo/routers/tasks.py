@@ -68,8 +68,7 @@ async def update_task(
     for attr, value in updated_attrs.model_dump(
         exclude_unset=True,
     ).items():
-        if getattr(task, attr) != value:
-            setattr(task, attr, value)
+        setattr(task, attr, value)
     await task.asave()
     return TodoTask.model_validate(task)
 
