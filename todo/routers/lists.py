@@ -15,6 +15,7 @@ router = APIRouter(prefix="/lists", tags=["lists"])
     "",
     response_model=TodoList,
     status_code=status.HTTP_201_CREATED,
+    description="Create a list.",
 )
 def create_list(
     todo_list: TodoListCreate,
@@ -28,6 +29,7 @@ def create_list(
 @router.get(
     "",
     response_model=ListResponse[TodoList],
+    description="Retrieve lists.",
 )
 def get_lists(
     user: models.User = Depends(fetch_user),
@@ -39,6 +41,7 @@ def get_lists(
 @router.get(
     "/{list_id}",
     response_model=TodoList,
+    description="Retrieve a list.",
 )
 def get_list(
     todo_list: models.TodoList = Depends(fetch_list),
@@ -49,6 +52,7 @@ def get_list(
 @router.patch(
     "/{list_id}",
     response_model=TodoList,
+    description="Update a list.",
 )
 def update_list(
     list_attrs: TodoListUpdate,
@@ -63,6 +67,7 @@ def update_list(
 @router.delete(
     "/{list_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    description="Delete a list.",
 )
 def delete_list(
     todo_list: models.TodoList = Depends(fetch_list),

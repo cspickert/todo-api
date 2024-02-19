@@ -15,6 +15,7 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
     "",
     response_model=TodoTask,
     status_code=status.HTTP_201_CREATED,
+    description="Create a task.",
 )
 def create_task(
     task: TodoTaskCreate,
@@ -30,6 +31,7 @@ def create_task(
 @router.get(
     "",
     response_model=ListResponse[TodoTask],
+    description="Retrieve tasks.",
 )
 def get_tasks(user: models.User = Depends(fetch_user), list_id: int | None = None):
     tasks_queryset = models.TodoTask.objects.filter(todo_list__user=user)
@@ -42,6 +44,7 @@ def get_tasks(user: models.User = Depends(fetch_user), list_id: int | None = Non
 @router.get(
     "/{task_id}",
     response_model=TodoTask,
+    description="Retrieve a task.",
 )
 def get_task(task: models.TodoTask = Depends(fetch_task)):
     return TodoTask.model_validate(task)
@@ -50,6 +53,7 @@ def get_task(task: models.TodoTask = Depends(fetch_task)):
 @router.patch(
     "/{task_id}",
     response_model=TodoTask,
+    description="Update a task.",
 )
 def update_task(
     task_attrs: TodoTaskUpdate,
@@ -64,6 +68,7 @@ def update_task(
 @router.delete(
     "/{task_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    description="Delete a task.",
 )
 def delete_task(
     task: models.TodoTask = Depends(fetch_task),
