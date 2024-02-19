@@ -13,7 +13,8 @@ Here's an example of how this API can be used to create and manage to-dos:
 * `POST /tasks {"list_id": 1, "task": "Design API"}` - add a task to the list
 * `POST /tasks {"list_id": 1, "task": "Write documentation"}` - add another task to the list
 * `GET /tasks?list_id=1` - get tasks on the list
-* `PATCH /tasks/1 {"task": "Design & build API"}` - update a task
+* `PATCH /tasks/1 {"task": "Design & build API"}` - update a task's description
+* `PATCH /tasks/1 {"completed": true}` - mark a task as completed
 * `DELETE /tasks/2` - remove a task
 * `DELETE /lists/1` - remove a list and its tasks
 

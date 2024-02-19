@@ -58,11 +58,19 @@ async def get_task(task: models.TodoTask = Depends(fetch_task)):
     description="Update a task.",
 )
 async def update_task(
-    task_attrs: TodoTaskUpdate,
+    task_update_attrs: TodoTaskUpdate,
     task: models.TodoTask = Depends(fetch_task),
 ):
-    for attr, value in task_attrs.model_dump(exclude_unset=True).items():
-        setattr(task, attr, value)
+    stored_attrs = TodoTaskUpdate.model_validate(task, from_attributes=True)
+    updated_attrs = stored_attrs.model_copy(
+        update=task_update_attrs.model_dump(exclude_unset=True)
+    )
+    for attr, value in updated_attrs.model_dump(
+        exclude_unset=True,
+        exclude={"completed"},
+    ).items():
+        if getattr(task, attr) != value:
+            setattr(task, attr, value)
     await task.asave()
     return TodoTask.model_validate(task)
 

@@ -59,3 +59,7 @@ class TodoTask(Base):
 
     class Meta:
         default_related_name = "tasks"
+
+    @property
+    def completed(self):
+        return self.completed_at is not None

@@ -1,4 +1,5 @@
 import pytest
+from django.utils import timezone
 
 from todo.models import TodoTask
 
@@ -34,6 +35,7 @@ def test_create_task(client, todo_list):
         "id": task.id,
         "list_id": task.todo_list_id,
         "task": "new test task",
+        "completed": False,
     }
 
 
@@ -55,6 +57,7 @@ def test_get_tasks(client, task):
                 "id": task.id,
                 "list_id": task.todo_list_id,
                 "task": task.task,
+                "completed": False,
             }
         ]
     }
@@ -91,6 +94,7 @@ def test_get_task(client, task):
         "id": task.id,
         "list_id": task.todo_list_id,
         "task": task.task,
+        "completed": False,
     }
 
 
@@ -112,9 +116,42 @@ def test_update_task(client, task):
         "id": task.id,
         "list_id": task.todo_list_id,
         "task": updated_task,
+        "completed": False,
     }
     task.refresh_from_db()
     assert task.task == updated_task
+
+
+@pytest.mark.freeze_time
+def test_update_task_completed(client, task):
+    resp = client.patch(f"/tasks/{task.id}", json={"completed": True})
+    assert resp.status_code == 200
+    assert resp.json() == {
+        "id": task.id,
+        "list_id": task.todo_list_id,
+        "task": task.task,
+        "completed": True,
+    }
+    task.refresh_from_db()
+    assert task.completed
+    assert task.completed_at == timezone.now()
+
+
+@pytest.mark.freeze_time
+def test_update_task_not_completed(client, task):
+    task.completed_at = timezone.now()
+    task.save()
+    resp = client.patch(f"/tasks/{task.id}", json={"completed": False})
+    assert resp.status_code == 200
+    assert resp.json() == {
+        "id": task.id,
+        "list_id": task.todo_list_id,
+        "task": task.task,
+        "completed": False,
+    }
+    task.refresh_from_db()
+    assert not task.completed
+    assert task.completed_at is None
 
 
 def test_update_task_nonexistent(client):
