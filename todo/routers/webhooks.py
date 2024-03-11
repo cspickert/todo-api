@@ -1,13 +1,10 @@
 import os
 from typing import Annotated
 
-from fastapi import Depends, Header, Request, status
+from fastapi import Header, Request, status
 from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRouter
 from readme_metrics.VerifyWebhook import VerifyWebhook
-
-from todo import models
-from todo.queries import fetch_user
 
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])
 
@@ -25,7 +22,6 @@ README_SECRET = os.getenv("README_SECRET")
 async def readme_webhook(
     request: Request,
     readme_signature: Annotated[str | None, Header()] = None,
-    # user: models.User = Depends(fetch_user),
 ) -> dict:
     # Verify the request is legitimate and came from ReadMe.
     try:
